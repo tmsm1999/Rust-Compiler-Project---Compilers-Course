@@ -115,7 +115,7 @@ expr:
 ;
 
 boolexpr:
-  LPAR boolexpr RPAR    { $$ = $2;
+  LPAR boolexpr RPAR    { $$ = $2; }
 | VAR                   { $$ = ast_boolVar($1); if(lookup(variables, $1) == NULL) { error_message($1); return 1; } }  
 | TRUE                  { $$ = ast_boolVal(1);              }
 | FALSE                 { $$ = ast_boolVal(0);              }
