@@ -3,7 +3,7 @@
 void printMIPS(InstrList* intermCode) {
     Instr* instr = intermCode -> first;
 
-    printf(".data\n");
+    printf(".data\n"); //begining of data section
     for(int i = 0; i < HASH_SIZE; i++) {
     	if(variables -> array[i] != NULL) {
     		LIST_HT cur = variables -> array[i];
@@ -12,7 +12,10 @@ void printMIPS(InstrList* intermCode) {
     		}
     	} 
     }
+    //end of data section
 
+
+    //begining of text section
     printf(".text\n");
     while(instr) { //stops when it is NULL.
         switch(instr -> op) {
@@ -65,6 +68,7 @@ void printMIPS(InstrList* intermCode) {
         }
         instr = instr -> next;
     }
+    //End of text section
 }
 
 // typedef enum { ATRIB, PLUS, MINUS, DIV, MULT, MOD, LABEL, GOTO, IFE, IFNE, IFG, IFGE, IFL, IFLE } OpKind;
