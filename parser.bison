@@ -93,10 +93,10 @@ seqcmd:
 ;
 
 cmd:
-  LET VAR ASSIGN expr SEMCOL                                  { $$ = ast_assign_expr($2, $4); if(variables == NULL) { variables = init_table(); } insert(variables, $2); }
-| LET VAR ASSIGN boolexpr SEMCOL                              { $$ = ast_assign_boolexpr($2, $4); if(variables == NULL) { variables = init_table(); } insert(variables, $2); }
-| READ LPAR VAR RPAR SEMCOL                                   { $$ = ast_readline($3); if(variables == NULL) { variables = init_table(); } if(lookup(variables, $3) == NULL) { error_message($3); } }
-| PRINT LPAR VAR RPAR SEMCOL                                  { $$ = ast_println($3); if(variables == NULL) { variables = init_table(); } if(lookup(variables, $3) == NULL) { error_message($3); } }
+  LET VAR ASSIGN expr SEMCOL                                  { $$ = ast_assign_expr($2, $4); insert(variables, $2); }
+| LET VAR ASSIGN boolexpr SEMCOL                              { $$ = ast_assign_boolexpr($2, $4); insert(variables, $2); }
+| READ LPAR VAR RPAR SEMCOL                                   { $$ = ast_readline($3); if(lookup(variables, $3) == NULL) { error_message($3); return 1; } }
+| PRINT LPAR VAR RPAR SEMCOL                                  { $$ = ast_println($3); if(lookup(variables, $3) == NULL) { error_message($3); return 1; } }
 | IF boolexpr LBRACK seqcmd RBRACK ELSE LBRACK seqcmd RBRACK  { $$ = ast_ifthenelse($2, $4, $8);  }
 | IF boolexpr LBRACK seqcmd RBRACK                            { $$ = ast_ifthen($2, $4);          }
 | WHILE boolexpr LBRACK seqcmd RBRACK                         { $$ = ast_whileloop($2, $4);       }
@@ -104,7 +104,7 @@ cmd:
 
 expr:
   LPAR expr RPAR          { $$ = $2;                            }
-| VAR                     { $$ = ast_var($1); if(variables == NULL) { variables = init_table(); } if(lookup(variables, $1) == NULL) { error_message($1); } }
+| VAR                     { $$ = ast_var($1); if(lookup(variables, $1) == NULL) { error_message($1); return 1; } }  
 | INT                     { $$ = ast_integer($1);               }
 | expr PLUS expr          { $$ = ast_operation(PLUS, $1, $3);   }
 | expr MINUS expr         { $$ = ast_operation(MINUS, $1, $3);  }
@@ -115,8 +115,8 @@ expr:
 ;
 
 boolexpr:
-  LPAR boolexpr RPAR    { $$ = $2;                          }
-| VAR                   { $$ = ast_boolVar($1); if(variables == NULL) { variables = init_table(); } if(lookup(variables, $1) == NULL) { error_message($1); } }
+  LPAR boolexpr RPAR    { $$ = $2;
+| VAR                   { $$ = ast_boolVar($1); if(lookup(variables, $1) == NULL) { error_message($1); return 1; } }  
 | TRUE                  { $$ = ast_boolVal(1);              }
 | FALSE                 { $$ = ast_boolVal(0);              }
 | expr EQ expr          { $$ = ast_boolExpr(EQ, $1, $3);    }

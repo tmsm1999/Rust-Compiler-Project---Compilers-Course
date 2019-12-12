@@ -2,7 +2,7 @@
 #include "listHashTable.h"
 
 
-#define HASH_SIZE  15485867 // Prime number
+#define HASH_SIZE  500 // Prime number
 #define MULTIPLIER 32       // 31, 32 and 33 are good to avoid collisions
 
 typedef struct hashtable {

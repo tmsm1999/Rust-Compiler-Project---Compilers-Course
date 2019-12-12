@@ -4,6 +4,7 @@
 
 int main(int argc, char** argv)
 {
+  variables = init_table();
   --argc; ++argv;
 
   if (argc != 0)
