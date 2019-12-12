@@ -1,0 +1,23 @@
+//fssafa
+//sfasf
+fn main()
+{
+	let x = 0;
+	let y = 0;
+	read_line(x);
+	read_line(y);
+
+	while(x < y)
+	{
+		println(x);
+
+		let x = x + 1;
+
+		if(x == y)
+		{
+			let z = (x + y) / 2;
+			println(z);
+		}
+	}
+}
+//ola
