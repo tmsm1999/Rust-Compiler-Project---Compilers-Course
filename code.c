@@ -4,9 +4,11 @@
 #include <string.h> // for strdup
 #include <stdio.h>
 
-int var_counter_t = 0;
-int var_counter_s = 0;
 int label_counter = 0;
+int var_counter_t = 20;
+int var_counter_s = 20;
+int var_counter_inf = 10;
+bool used[3] = { 0 };
 
 Atom* atom_value(int value)
 {
@@ -130,28 +132,40 @@ void printInstr(Instr* instr)
 		printf("GOTO,");
 		break;
 
-		case I_IFEQ:
-		printf("IFE,");
+		case I_IF:
+		printf("IF,");
 		break;
 
-		case I_IFNE:
-		printf("IFNE,");
+		case I_BEQ:
+		printf("BEQ,");
 		break;
 
-		case I_IFGT:
-		printf("IFGT,");
+		case I_BNE:
+		printf("BNE,");
 		break;
 
-		case I_IFGE:
-		printf("IFGE,");
+		case I_BGT:
+		printf("BGT,");
 		break;
 
-		case I_IFLT:
-		printf("IFLT,");
+		case I_BGE:
+		printf("BGE,");
 		break;
 
-		case I_IFLE:
-		printf("IFLE,");
+		case I_BLT:
+		printf("BLT,");
+		break;
+
+		case I_BLE:
+		printf("BLE,");
+		break;
+
+		case I_OR:
+		printf("OR,");
+		break;
+
+  		case I_AND:
+  		printf("AND,");
 		break;
 
 		case I_PRINT:
@@ -203,11 +217,19 @@ void printInstrList(InstrList* list)
 
 //========================================================================================================================
 
+char* newLabel()
+{
+	char buffer[20];
+	sprintf(buffer, "l%d", label_counter);
+	label_counter++;
+	return strdup(buffer);
+}
+
 char* newVar()
 {
 	char buffer[20];
 
-	if(var_counter_t <= 9)
+	if(var_counter_t <= 6)
 	{
 		sprintf(buffer, "$t%d", var_counter_t++);
 	}
@@ -217,17 +239,10 @@ char* newVar()
 	}
 	else
 	{
-		sprintf(buffer, "$t%d", var_counter_t++);
+		sprintf(buffer, "_t%d", var_counter_inf++);
+		insert(variables, strdup(buffer));
 	}
 
-	return strdup(buffer);
-}
-
-char* newLabel()
-{
-	char buffer[20];
-	sprintf(buffer, "l%d", label_counter);
-	label_counter++;
 	return strdup(buffer);
 }
 
@@ -240,63 +255,87 @@ OpKind map_operator(int op)
   	case DIV: return I_DIV;
   	case MULT: return I_MULT;
   	case MOD: return I_MOD;
-  	case EQ: return I_IFEQ;
-  	case NE: return I_IFNE;
-  	case GT: return I_IFGT;
-  	case GE: return I_IFGE;
-  	case LT: return I_IFLT;
-  	case LE: return I_IFLE;
+  	case EQ: return I_BEQ;
+  	case NE: return I_BNE;
+  	case GT: return I_BGT;
+  	case GE: return I_BGE;
+  	case LT: return I_BLT;
+  	case LE: return I_BLE;
+  	case OR: return I_OR;
+  	case AND: return I_AND;
   	default: return -1;
   }
 }
 
-InstrList* compileExpr(Expr* exp, char* reg)
+InstrList* compileExpr(Expr* exp, char* place)
 {
+	InstrList* code;
+	char* reg;
+
+	if(place[0] == '_') reg = "$t7"; else reg = place;
+
 	switch(exp->kind)
 	{
 		case E_VAR:
 		{
-			InstrList* code = mkInstrList(mkInstr(I_LOAD, atom_name(reg), atom_name(exp->attr.var), atom_empty(), atom_empty()), NULL);
-			return code;
+			code = mkInstrList(mkInstr(I_LOAD, atom_name(reg), atom_name(exp->attr.var), atom_empty(), atom_empty()), NULL);
+			break;
 		}
 
 		case E_INTEGER:
 		{
-			InstrList* code = mkInstrList(mkInstr(I_ATRIB, atom_name(reg), atom_value(exp->attr.value), atom_empty(), atom_empty()), NULL);
-			return code;
+			code = mkInstrList(mkInstr(I_ATRIB, atom_name(reg), atom_value(exp->attr.value), atom_empty(), atom_empty()), NULL);
+			break;
 		}
 
 		case E_OPERATION:
 		{
-			char* r1 = newVar();
-			InstrList* l1 = compileExpr(exp->attr.op.left, r1);
-			char* r2 = newVar();
-			InstrList* l2 = compileExpr(exp->attr.op.right, r2);
-			InstrList* l3 = append(l1, l2);
-			InstrList* l4 = append(l3, mkInstrList(mkInstr(map_operator(exp->attr.op.operator), atom_name(reg), atom_name(r1), atom_name(r2), atom_empty()), NULL));
-			return l4;
+			if(place[0] == '_')
+			{
+				char* r1 = "$t8";
+				InstrList* l1 = compileExpr(exp->attr.op.left, r1);
+				char* r2 = "$t9";
+				InstrList* l2 = compileExpr(exp->attr.op.right, r2);
+				InstrList* l3 = append(l1, l2);
+				code = append(l3, mkInstrList(mkInstr(map_operator(exp->attr.op.operator), atom_name(reg), atom_name(r1), atom_name(r2), atom_empty()), NULL));
+				break;
+			}
+
+			else
+			{
+				char* r1 = newVar();
+				InstrList* l1 = compileExpr(exp->attr.op.left, r1);
+				char* r2 = newVar();
+				InstrList* l2 = compileExpr(exp->attr.op.right, r2);
+				InstrList* l3 = append(l1, l2);
+				code = append(l3, mkInstrList(mkInstr(map_operator(exp->attr.op.operator), atom_name(reg), atom_name(r1), atom_name(r2), atom_empty()), NULL));
+				break;
+			}
 		}
 	}
+
+	if(place[0] != '_')
+		return code;
+	else
+		return append(code, mkInstrList(mkInstr(I_STORE, atom_name(reg), atom_name(place), atom_empty(), atom_empty()), NULL));
 }
 
-InstrList* compileBool(char* l_true, char* l_false, BoolExpr* boolexp)
+InstrList* compileBoolExpr(BoolExpr* boolexp, char* reg)
 {
+	InstrList* code;
+
 	switch(boolexp->kind)
 	{
 		case BE_VAR:
 		{
-			char* t1 = newVar();
-			InstrList* l1 = mkInstrList(mkInstr(I_LOAD, atom_name(t1), atom_name(boolexp->attr.var), atom_empty(), atom_empty()), NULL);
-			InstrList* code = append(l1, mkInstrList(mkInstr(I_IFNE, atom_name(t1), atom_name("$zero"), atom_name(l_true), atom_name(l_false)), NULL));
-			return code;
+			code = mkInstrList(mkInstr(I_LOAD, atom_name(reg), atom_name(boolexp->attr.var), atom_empty(), atom_empty()), NULL);
+			break;
 		}
 
 		case BE_VALUE:
 		{
-			char* t1 = newVar();
-			InstrList* l1 = mkInstrList(mkInstr(I_LOAD, atom_name(t1), atom_value(boolexp->attr.value), atom_empty(), atom_empty()), NULL);
-			InstrList* code = append(l1, mkInstrList(mkInstr(I_IFNE, atom_name(t1), atom_name("$zero"), atom_name(l_true), atom_name(l_false)), NULL));
-			return code;
+			code = mkInstrList(mkInstr(I_ATRIB, atom_name(reg), atom_value(boolexp->attr.value), atom_empty(), atom_empty()), NULL);
+			break;
 		}
 
 		case BE_OPERATION:
@@ -306,15 +345,31 @@ InstrList* compileBool(char* l_true, char* l_false, BoolExpr* boolexp)
 			char* r2 = newVar();
 			InstrList* l2 = compileExpr(boolexp->attr.op.right, r2);
 			InstrList* l3 = append(l1, l2);
-			InstrList* l4 = append(l3, mkInstrList(mkInstr(map_operator(boolexp->attr.op.operator), atom_name(r1), atom_name(r2), atom_name(l_true), atom_name(l_false)), NULL));
-			return l4;
+			code = append(l3, mkInstrList(mkInstr(map_operator(boolexp->attr.op.operator), atom_name(reg), atom_name(r1), atom_name(r2), atom_empty()), NULL));
+			break;
 		}
 
 		case BE_LOGIC:
 		{
-			return NULL;
+			char* r1 = newVar();
+			InstrList* l1 = compileBoolExpr(boolexp->attr.logic.left, r1);
+			char* r2 = newVar();
+			InstrList* l2 = compileBoolExpr(boolexp->attr.logic.right, r2);
+			InstrList* l3 = append(l1, l2);
+			code = append(l3, mkInstrList(mkInstr(map_operator(boolexp->attr.logic.operator), atom_name(reg), atom_name(r1), atom_name(r2), atom_empty()), NULL));
+			break;
 		}
 	}
+
+	return code;
+}
+
+InstrList* compileBoolCond(char* l_true, char* l_false, BoolExpr* boolexp)
+{
+	char* t1 = newVar();
+	InstrList* l1 = compileBoolExpr(boolexp, t1);
+	InstrList* code = append(l1, mkInstrList(mkInstr(I_IF, atom_name(t1), atom_name(l_true), atom_name(l_false), atom_empty()), NULL));
+	return code;
 }
 
 InstrList* compileCmd(Cmd* cmd)
@@ -326,22 +381,27 @@ InstrList* compileCmd(Cmd* cmd)
 		case C_ASSIGN_EXPR:
 		{
 			char* r1 = newVar();
+			if(r1[0] == '_') r1 = "$t7";
 			InstrList* l1 = compileExpr(cmd->attr.assignexpr.value, r1);
+			
 			code = append(l1, mkInstrList(mkInstr(I_STORE, atom_name(r1), atom_name(cmd->attr.assignexpr.var), atom_empty(), atom_empty()), NULL));
+
 			break;
 		}
 
 		case C_ASSIGN_BOOL:
 		{
-			//InstrList* code = compileBool(cmd->attr.assignexpr.value, cmd->attr.assignbool.var);
-			return NULL;
+			char* r1 = newVar();
+			InstrList* l1 = compileBoolExpr(cmd->attr.assignbool.value, r1);
+			code = append(l1, mkInstrList(mkInstr(I_STORE, atom_name(r1), atom_name(cmd->attr.assignbool.var), atom_empty(), atom_empty()), NULL));
+			break;
 		}
 
 		case C_IF:
 		{
 			char* l_true = newLabel();
 			char* l_false = newLabel();
-			InstrList* cond = compileBool(l_true, l_false, cmd->attr.ifthen.cond);
+			InstrList* cond = compileBoolCond(l_true, l_false, cmd->attr.ifthen.cond);
 			InstrList* body = compileCmd(cmd->attr.ifthen.cmd);
 			code = append(append(cond, mkInstrList(mkInstr(I_LABEL, atom_name(l_true), atom_empty(), atom_empty(), atom_empty()), NULL)), append(body, mkInstrList(mkInstr(I_LABEL, atom_name(l_false), atom_empty(), atom_empty(), atom_empty()), NULL)));
 			break;
@@ -351,7 +411,7 @@ InstrList* compileCmd(Cmd* cmd)
 		{
 			char* l_true = newLabel();
 			char* l_false = newLabel();
-			InstrList* cond = compileBool(l_true, l_false, cmd->attr.ifthenelse.cond);
+			InstrList* cond = compileBoolCond(l_true, l_false, cmd->attr.ifthenelse.cond);
 			InstrList* body1 = compileCmd(cmd->attr.ifthenelse.cmd1);
 			InstrList* body2 = compileCmd(cmd->attr.ifthenelse.cmd2);
 			code = append(cond, append(append(mkInstrList(mkInstr(I_LABEL, atom_name(l_true), atom_empty(), atom_empty(), atom_empty()), NULL), body1), append(mkInstrList(mkInstr(I_LABEL, atom_name(l_false), atom_empty(), atom_empty(), atom_empty()), NULL), body2)));
@@ -363,7 +423,7 @@ InstrList* compileCmd(Cmd* cmd)
 			char* l_top = newLabel();
 			char* l_true = newLabel();
 			char* l_false = newLabel();
-			InstrList* cond = compileBool(l_true, l_false, cmd->attr.whileloop.cond);
+			InstrList* cond = compileBoolCond(l_true, l_false, cmd->attr.whileloop.cond);
 			InstrList* body = compileCmd(cmd->attr.whileloop.cmd);
 			InstrList* l1 = mkInstrList(mkInstr(I_LABEL, atom_name(l_top), atom_empty(), atom_empty(), atom_empty()), cond);
 			InstrList* l2 = mkInstrList(mkInstr(I_LABEL, atom_name(l_true), atom_empty(), atom_empty(), atom_empty()), body);

@@ -49,28 +49,28 @@ void printMIPS(InstrList* intermCode) {
             case I_GOTO:
                 printf("j %s\n", instr->el1->u.name);
                 break;
-            case I_IFEQ:
+            case I_BEQ:
                 printf("beq %s, %s, %s\n", instr -> el1->u.name, instr -> el2->u.name, instr -> el3->u.name);
                 printf("j %s\n", instr -> el4->u.name);
                 break;
-            case I_IFNE:
+            case I_BNE:
                 printf("bne %s, %s, %s\n", instr -> el1->u.name, instr -> el2->u.name, instr -> el3->u.name);
                 printf("j %s\n", instr -> el4->u.name);
                 break;
-            case I_IFGT:
+            case I_BGT:
                 printf("bgtz %s, %s, %s\n", instr -> el1->u.name, instr -> el2->u.name, instr -> el3->u.name);
                 printf("j %s\n", instr -> el4->u.name);
                 break;
-            case I_IFGE:
+            case I_BGE:
                 printf("bgez %s, %s, %s\n", instr -> el1->u.name, instr -> el2->u.name, instr -> el3->u.name);
                 printf("j %s\n", instr -> el4->u.name);
                 break;
-            case I_IFLT:
+            case I_BLT:
                 printf("slt $at, %s, %s\n", instr -> el1->u.name, instr -> el2->u.name);
                 printf("bne $at, $zero, %s\n", instr -> el3->u.name);
                 printf("j %s\n", instr -> el4->u.name);
                 break;
-            case I_IFLE:
+            case I_BLE:
                 printf("blez %s, %s, %s\n", instr -> el1->u.name, instr -> el2->u.name, instr -> el3->u.name);
                 printf("j %s\n", instr -> el4->u.name);
                 break;
@@ -90,6 +90,8 @@ void printMIPS(InstrList* intermCode) {
             case I_STORE:
                 printf("sw %s, %s\n", instr -> el1->u.name, instr -> el2->u.name);
                 break;
+
+            default: break; //TODO
 
         }
         instr = instr -> next;
