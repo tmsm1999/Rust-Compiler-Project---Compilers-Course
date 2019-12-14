@@ -1,4 +1,74 @@
-fn main() {
-    let x = 1;
-    read_line(y);
+// Best program ever.
+fn main()
+{ 
+	let x = 2/3 * (1 + 1);
+	let y = 3 + 2 - 1 + 1 - 1 - 1 + 1 + 1;
+
+	if true
+	{
+		let boatarde=---3*-(--42/-2);
+	}
+
+	if !-2 > 3--x
+	{
+		while !(!!!true || ! (27 != -27 && -42 < 42))
+		{
+			let x = 1 % 2;
+			let y = 2;
+			let z = 3;
+			let sofa = false && 27 < 42;
+		}
+
+		while (!true || -(-27-3)+-12 == 27 && ! 1 < 2) //boa tarde
+		{
+			let x = -1-2+-3;
+			let y = 2;
+			let z = -(y)+1;
+			let sofa = 3 - -  - -  --4--(x);
+		}
+
+		println(x);
+
+		let x =- y;
+
+		let string = 0;
+		read_line(string);
+		println(string);
+
+		if(true)
+		{
+			let boatarde12e_1=---3%-(--42/-2);
+		}
+
+		if false && true
+		{
+			let coiso = -1;
+		}
+		else
+		{
+			let coiso = 1;
+		}
+
+		if true
+		{
+			let boatarde12e_2=-(---3%-(--42/-2));
+		}
+	}
+
+	else
+	{
+		if boatarde
+		{
+			let fsagas = -2 + x;
+		}
+	}
+
+	let r = 0;
+
+	if (x != y)
+	{
+		let boatarde2 = x && r && y && true;
+	}
+
+	let x = -(3--3);
 }
