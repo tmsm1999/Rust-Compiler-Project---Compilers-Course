@@ -5,8 +5,8 @@
 #include <stdio.h>
 
 int label_counter = 0;
-int var_counter_t = 20;
-int var_counter_s = 20;
+int var_counter_t = 0;
+int var_counter_s = 0;
 int var_counter_inf = 10;
 bool used[3] = { 0 };
 
@@ -124,6 +124,10 @@ void printInstr(Instr* instr)
 		printf("MOD,");
 		break;
 
+		case I_NEG:
+		printf("NEG,");
+		break;
+
 		case I_LABEL:
 		printf("LABEL,");
 		break;
@@ -166,6 +170,10 @@ void printInstr(Instr* instr)
 
   		case I_AND:
   		printf("AND,");
+		break;
+
+		case I_NOT:
+		printf("NOT,");
 		break;
 
 		case I_PRINT:
