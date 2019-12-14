@@ -174,7 +174,8 @@ void printInstr(Instr* instr)
 
 		case I_NOT:
 		printf("NOT,");
-
+    break;
+      
 		case I_PRINT:
 		printf("PRINT,");
 		break;
