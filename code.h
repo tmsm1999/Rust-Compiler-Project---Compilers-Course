@@ -1,7 +1,7 @@
 #ifndef __code_h__
 #define __code_h__
 
-typedef enum { I_ATRIB, I_PLUS, I_MINUS, I_DIV, I_MULT, I_MOD, I_LABEL, I_GOTO, I_IF, I_BEQ, I_BNE, I_BGT, I_BGE, I_BLT, I_BLE, I_OR, I_AND, I_PRINT, I_READ, I_LOAD, I_STORE } OpKind;
+typedef enum { I_ATRIB, I_PLUS, I_MINUS, I_DIV, I_MULT, I_MOD, I_NEG, I_LABEL, I_GOTO, I_IF, I_BEQ, I_BNE, I_BGT, I_BGE, I_BLT, I_BLE, I_OR, I_AND, I_NOT, I_PRINT, I_READ, I_LOAD, I_STORE } OpKind;
 
 struct _Atom
 {
