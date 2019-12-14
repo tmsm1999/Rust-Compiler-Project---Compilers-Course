@@ -8,7 +8,6 @@ int label_counter = 0;
 int var_counter_t = 0;
 int var_counter_s = 0;
 int var_counter_inf = 10;
-bool used[3] = { 0 };
 
 Atom* atom_value(int value)
 {
@@ -174,7 +173,7 @@ void printInstr(Instr* instr)
 
 		case I_NOT:
 		printf("NOT,");
-    break;
+    	break;
       
 		case I_PRINT:
 		printf("PRINT,");
@@ -303,9 +302,17 @@ InstrList* compileExpr(Expr* exp, char* place)
 			char* r2 = newVar();
 			InstrList* l2 = compileExpr(exp->attr.op.right, r2);
 			InstrList* l3 = append(l1, l2);
-			l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t8"), atom_name(r1), atom_empty(), atom_empty()), NULL));
-			l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t9"), atom_name(r2), atom_empty(), atom_empty()), NULL));
-			code = append(l3, mkInstrList(mkInstr(map_operator(exp->attr.op.operator), atom_name(reg), atom_name("$t8"), atom_name("$t9"), atom_empty()), NULL));
+			if(r1[0] == '_')
+			{
+				l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t8"), atom_name(r1), atom_empty(), atom_empty()), NULL));
+				r1 = "$t8";
+			}
+			if(r2[0] == '_')
+			{
+				l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t9"), atom_name(r2), atom_empty(), atom_empty()), NULL));
+				r2 = "$t9";
+			}
+			code = append(l3, mkInstrList(mkInstr(map_operator(exp->attr.op.operator), atom_name(reg), atom_name(r1), atom_name(r2), atom_empty()), NULL));
 			break;
 		}
 	}
@@ -347,8 +354,16 @@ InstrList* compileBoolExpr(BoolExpr* boolexp, char* place)
 			char* r2 = newVar();
 			InstrList* l2 = compileExpr(boolexp->attr.op.right, r2);
 			InstrList* l3 = append(l1, l2);
-			l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t8"), atom_name(r1), atom_empty(), atom_empty()), NULL));
-			l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t9"), atom_name(r2), atom_empty(), atom_empty()), NULL));
+			if(r1[0] == '_')
+			{
+				l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t8"), atom_name(r1), atom_empty(), atom_empty()), NULL));
+				r1 = "$t8";
+			}
+			if(r2[0] == '_')
+			{
+				l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t9"), atom_name(r2), atom_empty(), atom_empty()), NULL));
+				r2 = "$t9";
+			}
 			code = append(l3, mkInstrList(mkInstr(map_operator(boolexp->attr.op.operator), atom_name(reg), atom_name(r1), atom_name(r2), atom_empty()), NULL));
 			break;
 		}
