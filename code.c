@@ -375,8 +375,16 @@ InstrList* compileBoolExpr(BoolExpr* boolexp, char* place)
 			char* r2 = newVar();
 			InstrList* l2 = compileBoolExpr(boolexp->attr.logic.right, r2);
 			InstrList* l3 = append(l1, l2);
-			l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t8"), atom_name(r1), atom_empty(), atom_empty()), NULL));
-			l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t9"), atom_name(r2), atom_empty(), atom_empty()), NULL));
+			if(r1[0] == '_')
+			{
+				l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t8"), atom_name(r1), atom_empty(), atom_empty()), NULL));
+				r1 = "$t8";
+			}
+			if(r2[0] == '_')
+			{
+				l3 = append(l3, mkInstrList(mkInstr(I_LOAD, atom_name("$t9"), atom_name(r2), atom_empty(), atom_empty()), NULL));
+				r2 = "$t9";
+			}
 			code = append(l3, mkInstrList(mkInstr(map_operator(boolexp->attr.logic.operator), atom_name(reg), atom_name(r1), atom_name(r2), atom_empty()), NULL));
 			break;
 		}
@@ -439,10 +447,12 @@ InstrList* compileCmd(Cmd* cmd)
 		{
 			char* l_true = newLabel();
 			char* l_false = newLabel();
+			char* l_endif = newLabel();
 			InstrList* cond = compileBoolCond(l_true, l_false, cmd->attr.ifthenelse.cond);
 			InstrList* body1 = compileCmd(cmd->attr.ifthenelse.cmd1);
+			body1 = append(body1, mkInstrList(mkInstr(I_GOTO, atom_name(l_endif), atom_empty(), atom_empty(), atom_empty()), NULL));
 			InstrList* body2 = compileCmd(cmd->attr.ifthenelse.cmd2);
-			code = append(cond, append(append(mkInstrList(mkInstr(I_LABEL, atom_name(l_true), atom_empty(), atom_empty(), atom_empty()), NULL), body1), append(mkInstrList(mkInstr(I_LABEL, atom_name(l_false), atom_empty(), atom_empty(), atom_empty()), NULL), body2)));
+			code = append(append(cond, append(append(mkInstrList(mkInstr(I_LABEL, atom_name(l_true), atom_empty(), atom_empty(), atom_empty()), NULL), body1), append(mkInstrList(mkInstr(I_LABEL, atom_name(l_false), atom_empty(), atom_empty(), atom_empty()), NULL), body2))), mkInstrList(mkInstr(I_LABEL, atom_name(l_endif), atom_empty(), atom_empty(), atom_empty()), NULL));
 			break;
 		}
 
