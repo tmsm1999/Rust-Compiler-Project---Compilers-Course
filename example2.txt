@@ -24,14 +24,11 @@ fn main()
 	println(x);
 
 	let n = true;
-	if(!n || false)
+	if (!n || false)
 	{
 		let x = 1;
 	}
 
-	println(x);
-
-	let x = (!n || false) && true;
 	println(x);
 }
 //ola

@@ -83,7 +83,7 @@
 
 %%
 program:
-  FUNC MAIN LPAR RPAR LBRACK seqcmd RBRACK { root = $6; }
+  FUNC MAIN LPAR RPAR LBRACK seqcmd RBRACK { root = $6;   }
 | FUNC MAIN LPAR RPAR LBRACK RBRACK        { root = NULL; }
 ;
 
@@ -93,41 +93,41 @@ seqcmd:
 ;
 
 cmd:
-  LET VAR ASSIGN expr SEMCOL                                  { $$ = ast_assign_expr($2, $4); insert(variables, $2); }
-| LET VAR ASSIGN boolexpr SEMCOL                              { $$ = ast_assign_boolexpr($2, $4); insert(variables, $2); }
+  LET VAR ASSIGN expr SEMCOL                                  { $$ = ast_assign_expr($2, $4); insert(variables, $2);                                      }
+| LET VAR ASSIGN boolexpr SEMCOL                              { $$ = ast_assign_boolexpr($2, $4); insert(variables, $2);                                  }
 | READ LPAR VAR RPAR SEMCOL                                   { $$ = ast_readline($3); if(lookup(variables, $3) == NULL) { error_message($3); return 1; } }
-| PRINT LPAR VAR RPAR SEMCOL                                  { $$ = ast_println($3); if(lookup(variables, $3) == NULL) { error_message($3); return 1; } }
-| IF boolexpr LBRACK seqcmd RBRACK ELSE LBRACK seqcmd RBRACK  { $$ = ast_ifthenelse($2, $4, $8);  }
-| IF boolexpr LBRACK seqcmd RBRACK                            { $$ = ast_ifthen($2, $4);          }
-| WHILE boolexpr LBRACK seqcmd RBRACK                         { $$ = ast_whileloop($2, $4);       }
+| PRINT LPAR VAR RPAR SEMCOL                                  { $$ = ast_println($3); if(lookup(variables, $3) == NULL) { error_message($3); return 1; }  }
+| IF boolexpr LBRACK seqcmd RBRACK ELSE LBRACK seqcmd RBRACK  { $$ = ast_ifthenelse($2, $4, $8);                                                          }
+| IF boolexpr LBRACK seqcmd RBRACK                            { $$ = ast_ifthen($2, $4);                                                                  }
+| WHILE boolexpr LBRACK seqcmd RBRACK                         { $$ = ast_whileloop($2, $4);                                                               }
 ;
 
 expr:
-  LPAR expr RPAR          { $$ = $2;                            }
-| VAR                     { $$ = ast_var($1); if(lookup(variables, $1) == NULL) { error_message($1); return 1; } }  
-| INT                     { $$ = ast_integer($1);               }
-| expr PLUS expr          { $$ = ast_operation(PLUS, $1, $3);   }
-| expr MINUS expr         { $$ = ast_operation(MINUS, $1, $3);  }
-| expr MULT expr          { $$ = ast_operation(MULT, $1, $3);   }
-| expr DIV expr           { $$ = ast_operation(DIV, $1, $3);    }
-| expr MOD expr           { $$ = ast_operation(MOD, $1, $3);    }
-| MINUS expr %prec UMINUS { $$ = $2; $$->negative++;            }
+  LPAR expr RPAR          { $$ = $2;                                                                              }
+| VAR                     { $$ = ast_var($1); if(lookup(variables, $1) == NULL) { error_message($1); return 1; }  }  
+| INT                     { $$ = ast_integer($1);                                                                 }
+| expr PLUS expr          { $$ = ast_operation(PLUS, $1, $3);                                                     }
+| expr MINUS expr         { $$ = ast_operation(MINUS, $1, $3);                                                    }
+| expr MULT expr          { $$ = ast_operation(MULT, $1, $3);                                                     }
+| expr DIV expr           { $$ = ast_operation(DIV, $1, $3);                                                      }
+| expr MOD expr           { $$ = ast_operation(MOD, $1, $3);                                                      }
+| MINUS expr %prec UMINUS { $$ = $2; $$->negative++;                                                              }
 ;
 
 boolexpr:
   LPAR boolexpr RPAR    { $$ = $2; }
-| VAR                   { $$ = ast_boolVar($1); if(lookup(variables, $1) == NULL) { error_message($1); return 1; } }  
-| TRUE                  { $$ = ast_boolVal(1);              }
-| FALSE                 { $$ = ast_boolVal(0);              }
-| expr EQ expr          { $$ = ast_boolExpr(EQ, $1, $3);    }
-| expr NE expr          { $$ = ast_boolExpr(NE, $1, $3);    }
-| expr LT expr          { $$ = ast_boolExpr(LT, $1, $3);    }
-| expr GT expr          { $$ = ast_boolExpr(GT, $1, $3);    }
-| expr LE expr          { $$ = ast_boolExpr(LE, $1, $3);    }
-| expr GE expr          { $$ = ast_boolExpr(GE, $1, $3);    }
-| NOT boolexpr          { $$ = $2; $$->negation++;          }
-| boolexpr OR boolexpr  { $$ = ast_logicExpr(OR, $1, $3);   }
-| boolexpr AND boolexpr { $$ = ast_logicExpr(AND, $1, $3);  }
+| VAR                   { $$ = ast_boolVar($1); if(lookup(variables, $1) == NULL) { error_message($1); return 1; }  }  
+| TRUE                  { $$ = ast_boolVal(1);                                                                      }
+| FALSE                 { $$ = ast_boolVal(0);                                                                      }
+| expr EQ expr          { $$ = ast_boolExpr(EQ, $1, $3);                                                            }
+| expr NE expr          { $$ = ast_boolExpr(NE, $1, $3);                                                            }
+| expr LT expr          { $$ = ast_boolExpr(LT, $1, $3);                                                            }
+| expr GT expr          { $$ = ast_boolExpr(GT, $1, $3);                                                            }
+| expr LE expr          { $$ = ast_boolExpr(LE, $1, $3);                                                            }
+| expr GE expr          { $$ = ast_boolExpr(GE, $1, $3);                                                            }
+| NOT boolexpr          { $$ = $2; $$->negation++;                                                                  }
+| boolexpr OR boolexpr  { $$ = ast_logicExpr(OR, $1, $3);                                                           }
+| boolexpr AND boolexpr { $$ = ast_logicExpr(AND, $1, $3);                                                          }
 ;
 %%
 
