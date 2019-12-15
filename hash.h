@@ -1,3 +1,6 @@
+#ifndef __hash_h__
+#define __hash_h__
+
 #include <stdio.h>
 #include "listHashTable.h"
 
@@ -18,3 +21,5 @@ LIST_HT lookup(HASH_TABLE ht, char *var);
 void insert(HASH_TABLE ht, char *var);
 
 HASH_TABLE init_table();
+
+#endif

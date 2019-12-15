@@ -48,8 +48,6 @@ Instr* mkInstr(OpKind op, Atom* el1, Atom* el2, Atom* el3, Atom* el4);
 InstrList* mkInstrList(Instr* head, InstrList* tail);
 InstrList* append(InstrList* l1, InstrList* l2);
 
-void printAtom(Atom* a);
-void printInstr(Instr* instr);
 void printInstrList(InstrList* list);
 
 InstrList* compileCmd(Cmd* cmd);

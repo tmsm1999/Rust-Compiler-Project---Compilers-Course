@@ -1,5 +1,7 @@
-#define bool int
+#ifndef __listHashTable_h__
+#define __listHashTable_h__
 
+#define bool int
 
 // Hash table list structure
 typedef struct list_ht {
@@ -8,3 +10,5 @@ typedef struct list_ht {
 } *LIST_HT;
 
 LIST_HT newList_HT(char* var, LIST_HT l);
+
+#endif

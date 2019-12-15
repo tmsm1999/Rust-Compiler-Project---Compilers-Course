@@ -21,15 +21,15 @@ int main(int argc, char** argv)
 
   if (yyparse() == 0)
   {
-    if(root != NULL)
+    if(root != NULL) // If the program is not empty
     {
-      //printCmd(root, 0);
+      //printCmd(root, 0); // AST printing
 
-      InstrList* code = compileCmd(root);
+      InstrList* code = compileCmd(root); // Intermediate code generation
 
-      //printInstrList(code);
+      //printInstrList(code); // Intermediate code printing
 
-      printMIPS(code);
+      printMIPS(code); // MIPS code printing
     }
   }
 
