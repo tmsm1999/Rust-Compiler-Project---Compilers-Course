@@ -27,13 +27,19 @@ void printMIPS(InstrList* intermCode) {
     while(instr) { //stops when it is NULL.
         switch(instr -> op) {
             case I_ATRIB:
-                printf("\taddi %s, $0, %d\n", instr -> el1->u.name, instr -> el2 -> u.value);
+                printf("\tli %s, %d\n", instr -> el1->u.name, instr -> el2 -> u.value);
                 break;
             case I_PLUS:
                 printf("\tadd %s, %s, %s\n", instr -> el1->u.name, instr -> el2 -> u.name, instr -> el3 -> u.name);
                 break;
+            case I_ADDI:
+                printf("\taddi %s, %s, %d\n", instr -> el1->u.name, instr -> el2 -> u.name, instr -> el3 -> u.value);
+                break;
             case I_MINUS:           
                 printf("\tsub %s, %s, %s\n", instr -> el1 -> u.name, instr -> el2 -> u.name, instr -> el3 -> u.name);
+                break;
+            case I_SUBI:           
+                printf("\tsubi %s, %s, %d\n", instr -> el1 -> u.name, instr -> el2 -> u.name, instr -> el3 -> u.value);
                 break;
             case I_DIV:         
                 printf("\tdiv %s, %s\n", instr -> el2 -> u.name, instr -> el3 -> u.name);
@@ -96,11 +102,17 @@ void printMIPS(InstrList* intermCode) {
             case I_AND:
             	printf("\tand %s, %s, %s\n", instr -> el1 -> u.name, instr -> el2 -> u.name, instr -> el3 -> u.name);
             	break;
+            case I_ANDI:
+                printf("\tandi %s, %s, %d\n", instr -> el1 -> u.name, instr -> el2 -> u.name, instr -> el3 -> u.value);
+                break;
             case I_OR:
             	printf("\tor %s, %s, %s\n", instr -> el1 -> u.name, instr -> el2 -> u.name, instr -> el3 -> u.name);
             	break;
+            case I_ORI:
+                printf("\tori %s, %s, %d\n", instr -> el1 -> u.name, instr -> el2 -> u.name, instr -> el3 -> u.value);
+                break;
             case I_NOT:
-            	printf("\tnot %s, %s\n", instr -> el1 -> u.name, instr -> el2 -> u.name);
+            	printf("\txor %s, %s, %s\n", instr -> el1 -> u.name, instr -> el2 -> u.name, instr -> el2 -> u.name);
             	break;
             case I_NEG:
             	printf("\tneg %s, %s\n", instr -> el1 -> u.name, instr -> el2 -> u.name);

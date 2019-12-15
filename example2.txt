@@ -2,38 +2,36 @@
 //sfasf
 fn main()
 {
-	//let x = 0;
-	//let y = 0;
-	//read_line(x);
-	//read_line(y);
+	let x = 0;
+	let y = 0;
+	read_line(x);
+	read_line(y);
 
-	//while(x < y)
-	//{
-	//	println(x);
+	while(x < y)
+	{
+		println(x);
 
-	//	let x = x + 1;
+		let x = x + 1;
 
-	//	if(x == y)
-	//	{
-	//		let z = (x + y) / 2;
-	//		println(z);
-	//	}
-	//}
+		if(x == y)
+		{
+			let z = (x + y) / 3;
+			println(z);
+		}
+	}
 
-	//let x = --------(5+4)*2 + 3*4 * 5 + ---(4132+ 23 -4) / 2 *69 - 420;
-	//println(x);
+	let x = -------(5+4)*2 + 3*4 * 5 + --(4132+ 23 -4) / 2 *69 - 420;
+	println(x);
 
-	if(2 == 2) {
-let x = 2;
-let z = 5;
-while(x < 5) {
-let x = x + 1;
-println(x);
-}
-}
-else {
-let y = 0;
-println(y);
-}
+	let n = true;
+	if(!n || false)
+	{
+		let x = 1;
+	}
+
+	println(x);
+
+	let x = (!n || false) && true;
+	println(x);
 }
 //ola
